@@ -1,0 +1,38 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+runtime/
+*.egg-info/
+.installed.cfg
+*.egg
+*.zip
+*.dmp
+pipcache
+
+# logs
+pip-log.txt
+pip-delete-this-directory.txt
+*.log
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+results/*.xml
+
+# Translations
+*.mo
+
+# temp files
+.*.swp
+
+*.pid

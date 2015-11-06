@@ -1,0 +1,170 @@
+-- If we're indexing multiple sources, limit to a particular one
+curl -XGET 'http://localhost:9200/listhub/_search?pretty=true&q=listing_source_id:1'
+
+-- search by range
+curl -XGET 'http://localhost:9200/listhub/_search?pretty=true' -d '
+{
+    "query" : {
+        "range" : {
+            "price" : {
+                "from" : "0",
+                "to" : "100000",
+                "include_lower" : true,
+                "include_upper": true
+            }
+        }
+    }
+}
+'
+
+-- facets
+curl -X POST "http://localhost:9200/listhub/_search?pretty=true" -d '
+{
+    "query" : {
+        "match_all" : {  }
+    },
+    "facets" : {
+        "tag" : {
+            "terms" : {
+                "field" : "city",
+                "size" : 10,
+                "order" : "count"
+            }
+        }
+    }
+}
+'
+
+-- All
+        res = es.search(index="listhub", body={"query": {"match_all": {}}})
+curl -X POST "http://54.198.52.194:9200/carets/_search?pretty=true" -d '
+{
+    "query" : {
+        "match_all" : {  }
+    }
+}
+'
+
+curl -X POST "http://54.198.52.194:9200/listhub/_search?pretty=true" -d '
+{
+    "query" : {
+        "match_all" : {  }
+    }
+}
+'
+
+curl -X POST "http://54.198.52.194:9200/listhub/_search?size=1&pretty=true"
+
+
+-- Create an index
+curl -XPUT 'http://54.198.52.194:9200/carets/'
+curl -XPUT 'http://54.198.52.194:9200/listhub/'
+
+curl -XPUT 'http://54.198.52.194:9200/carets_test/'
+curl -XPUT 'http://localhost:9200/listhub/'
+curl -XPUT 'http://localhost:9200/carets/'
+
+# Testing against localhost -- create a full stack of indices w/alias
+curl -XPUT 'http://localhost:9200/carets_20140601/?pretty=true'
+curl -XPUT 'http://localhost:9200/carets_20140602/?pretty=true'
+curl -XPUT 'http://localhost:9200/listhub_20140601/?pretty=true'
+curl -XPUT 'http://localhost:9200/listhub_20140602/?pretty=true'
+
+
+################################################################
+# Reset the indices (production) for development -- blank slate #
+################################################################
+curl -XDELETE 'http://54.198.52.194:9200/idx/?pretty=true'
+curl -XDELETE 'http://54.198.52.194:9200/listhub/?pretty=true'
+curl -XDELETE 'http://54.198.52.194:9200/carets/?pretty=true'
+curl -XPUT 'http://54.198.52.194:9200/listhub/'
+curl -XPUT 'http://54.198.52.194:9200/carets/'
+curl -XPOST 'http://54.198.52.194:9200/_aliases' -d '
+{
+    "actions" : [
+        { "add" : { "index" : "carets", "alias" : "idx" } }
+        ,{ "add" : { "index" : "listhub", "alias" : "idx" } }
+    ]
+}'
+
+curl -XGET 'http://54.198.52.194:9200/listhub/_count?pretty=true'
+
+################################################################
+# Reset the indices (localhost) for development -- blank slate #
+################################################################
+curl -XDELETE 'http://localhost:9200/idx/?pretty=true'
+curl -XDELETE 'http://localhost:9200/listhub/?pretty=true'
+curl -XDELETE 'http://localhost:9200/carets/?pretty=true'
+curl -XPUT 'http://localhost:9200/listhub/'
+curl -XPUT 'http://localhost:9200/carets/'
+curl -XPOST 'http://localhost:9200/_aliases' -d '
+{
+    "actions" : [
+        { "add" : { "index" : "carets", "alias" : "idx" } }
+        ,{ "add" : { "index" : "listhub", "alias" : "idx" } }
+    ]
+}'
+
+
+curl -XGET 'http://localhost:9200/listhub/_count?pretty=true'
+1,156,585 messages
+
+-- Delete the index
+
+curl -XDELETE 'http://54.198.52.194:9200/listhub/?pretty=true'
+curl -XDELETE 'http://54.198.52.194:9200/carets/?pretty=true'
+curl -XDELETE 'http://54.198.52.194:9200/idx/?pretty=true'
+
+curl -XDELETE 'http://localhost:9200/listhub_20140623/?pretty=true'
+curl -XDELETE 'http://localhost:9200/listhub/?pretty=true'
+curl -XDELETE 'http://localhost:9200/listhub_20140623/?pretty=true'
+
+-- Count of indexed listings
+curl -XGET 'http://54.198.52.194:9200/listhub/_count?pretty=true'
+curl -XGET 'http://54.198.52.194:9200/listhub_20140618/_count?pretty=true'
+curl -XGET 'http://localhost:9200/listhub/_count?pretty=true'
+
+curl -XGET 'http://localhost:9200/listhub/listing/_count?pretty=true'
+
+
+curl -XGET 'http://54.198.52.194:9200/listhub_20140612/_search?pretty=true&q=mlsnumber:OC13188907'
+
+
+# Get a list of indices and their aliases:
+curl -XGET 'http://54.198.52.194:9200/_aliases?pretty=true'
+
+# Add an index to an alias
+curl -XPOST 'http://54.198.52.194:9200/_aliases' -d '
+{
+    "actions" : [
+        { "add" : { "index" : "listhub", "alias" : "idx" } }
+    ]
+}'
+
+curl -XPOST 'http://54.198.52.194:9200/_aliases' -d '
+{
+    "actions" : [
+        { "add" : { "index" : "carets", "alias" : "idx" } }
+    ]
+}'
+
+MLD ID: OC13188907
+Zip: 92624
+
+curl -XGET 'http://54.198.52.194:9200/_nodes/process?pretty'
+curl -XGET 'http://54.198.52.194:9200/_nodes/stats?pretty'
+
+curl -XGET 'http://localhost:9200/_nodes/process?pretty'
+
+curl localhost:9200/_nodes/process?pretty
+
+curl -XGET 'http://localhost:9200/listhub_20140606/_search?pretty=true' -d '{
+    "query" : {
+        "query_string" : {
+            "fields": ["mlsnumber"],
+            "query":"OC13188907",
+            "default_operator" : "AND"
+        }
+    }
+}
+'
